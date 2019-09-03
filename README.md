@@ -1,6 +1,6 @@
-# CMakeModules
+# Overview
 
-The CMakeModules project contains a collection of useful CMake modules that can
+The cmake-modules project contains a collection of useful CMake modules that can
 be easily integrated into any CMake project.
 
 ## Usage
