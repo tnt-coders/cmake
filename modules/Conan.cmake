@@ -28,7 +28,7 @@
 #     conan_cmake_run(
 #         CONANFILE conanfile.txt
 #         BASIC_SETUP CMAKE_TARGETS
-#         BUILD missing
+#         BUILD outdated
 #     )
 #
 # The name/path of the conanfile can be overridden by passing
@@ -66,7 +66,7 @@ function(conan_install)
         CONANFILE ${conanfile}
         ${ARGN}
         BASIC_SETUP CMAKE_TARGETS
-        BUILD missing
+        BUILD outdated
     )
 
 endfunction()
