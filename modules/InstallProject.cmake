@@ -56,10 +56,10 @@ function(install_project)
     set(multiValueArgs TARGETS)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    set(_destination lib/cmake/${PROJECT_NAME})
+    set(_install_destination lib/cmake/${PROJECT_NAME})
     if(args_NAMESPACE)
-        set(_destination lib/cmake/${args_NAMESPACE}/${PROJECT_NAME})
-        set(_install_namespace NAMESPACE ${args_NAMESPACE}::)
+        set(_install_destination lib/cmake/${args_NAMESPACE}/${PROJECT_NAME})
+        set(_install_namespace ${args_NAMESPACE}::)
     endif()
 
     # Create an export package of the targets
@@ -76,8 +76,8 @@ function(install_project)
     install(
       EXPORT ${PROJECT_NAME}-targets
       FILE ${PROJECT_NAME}-targets.cmake
-      ${_install_namespace}
-      DESTINATION ${_destination}
+      NAMESPACE ${_install_namespace}
+      DESTINATION ${_install_destination}
     )
 
     # Generate a package config file configuration file
@@ -91,7 +91,7 @@ function(install_project)
     configure_package_config_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-      INSTALL_DESTINATION ${_destination}
+      INSTALL_DESTINATION ${_install_destination}
     )
 
     # Gather files to be installed
@@ -110,7 +110,7 @@ function(install_project)
     # Install config files for the project
     install(
       FILES ${_install_files}
-      DESTINATION ${_destination}
+      DESTINATION ${_install_destination}
     )
 
     # Install public header files for the project
