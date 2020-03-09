@@ -1,35 +1,32 @@
 #.rst:
-# ConfigurePackage
+# InstallProject
 # --------------
 #
-# CMake helper function to configure and install targets to a default location
+# CMake helper function to install project targets to a default location
 #
 # This module provides a simple and re-produceable method for configuring and
 # installing targets from a CMake project. Simply list the targets you want to
-# configure and install from the current project and they will be configured and
-# installed in the default location. The install path can be modified by setting
-# ``CMAKE_INSTALL_PREFIX`` to the desired location. If a version is specified
-# for the project a default version config file will also be generated. This
-# file will declare "SameMajorVersion" compatibility. After the ``install``
-# phase of the project is executed, the ``find_package`` command can be used to
-# import the targets into other CMake projects. Additionally a namespace may be
-# specified for the package. If no namespace is provided, the default namespace
-# will be the project name - <project_name>::.
+# install from the current project and they will be installed in the default
+# location. The install path can be modified by setting ``CMAKE_INSTALL_PREFIX``
+# to the desired location. If a version is specified for the project a default
+# version config file will also be generated. This file will declare
+# "SameMajorVersion" compatibility. After the ``install`` phase of the project
+# is executed, the ``find_package`` command can be used to import the targets
+# into other CMake projects. Additionally a namespace may be specified for the
+# package.
 #
-# .. command:: configure_package
+# .. command:: install_project
 #
 # Configures and installs all of the listed targets for the given project.
 #
 # ::
 #
-#     configure_package(
+#     install_project(
 #       TARGETS <target>
 #               [target]
 #               [etc...]
+#       [NAMESPACE <namespace>]
 #     )
-#
-# A namespace for the package can be specified by passing
-# ``NAMESPACE [namespace]`
 #
 # Once the targets are installed they can easily be imported into other projects
 # using the ``find_package`` command and accessed through the imported package's
@@ -53,15 +50,16 @@ include_guard(GLOBAL)
 
 include(CMakePackageConfigHelpers)
 
-function(configure_package)
+function(install_project)
     set(options)
     set(oneValueArgs NAMESPACE)
     set(multiValueArgs TARGETS)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    set(_namespace ${PROJECT_NAME})
+    set(_destination lib/cmake/${PROJECT_NAME})
     if(args_NAMESPACE)
-        set(_namespace ${args_NAMESPACE})
+        set(_destination lib/cmake/${args_NAMESPACE}/${PROJECT_NAME})
+        set(_install_namespace NAMESPACE ${args_NAMESPACE}::)
     endif()
 
     # Create an export package of the targets
@@ -78,8 +76,8 @@ function(configure_package)
     install(
       EXPORT ${PROJECT_NAME}-targets
       FILE ${PROJECT_NAME}-targets.cmake
-      NAMESPACE ${_namespace}::
-      DESTINATION lib/cmake/${_namespace}/${PROJECT_NAME}
+      ${_install_namespace}
+      DESTINATION ${_destination}
     )
 
     # Generate a package config file configuration file
@@ -93,7 +91,7 @@ function(configure_package)
     configure_package_config_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-      INSTALL_DESTINATION lib/cmake/${_namespace}/${PROJECT_NAME}
+      INSTALL_DESTINATION ${_destination}
     )
 
     # Gather files to be installed
@@ -112,7 +110,7 @@ function(configure_package)
     # Install config files for the project
     install(
       FILES ${_install_files}
-      DESTINATION lib/cmake/${_namespace}/${PROJECT_NAME}
+      DESTINATION ${_destination}
     )
 
     # Install public header files for the project
