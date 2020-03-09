@@ -57,7 +57,7 @@ function(conan_install)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(conanfile "conanfile.txt")
-    if(${args_CONANFILE})
+    if(args_CONANFILE)
         set(conanfile ${args_CONANFILE})
     endif()
 
