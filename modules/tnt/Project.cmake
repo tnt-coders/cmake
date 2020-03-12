@@ -121,7 +121,7 @@ function(tnt_project_Install)
 
     # Create an export package of the targets
     install(
-      TARGETS ${{PROJECT_NAME}_TARGETS}
+      TARGETS ${${PROJECT_NAME}_TARGETS}
       EXPORT ${PROJECT_NAME}-targets
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib
