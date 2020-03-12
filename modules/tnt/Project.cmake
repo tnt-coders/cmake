@@ -88,6 +88,7 @@ function(tnt_project_AddLibrary)
 
     # Add the target to the list of targets for the project
     list(APPEND ${PROJECT_NAME}_TARGETS ${target})
+    set(${PROJECT_NAME}_TARGETS ${${PROJECT_NAME}_TARGETS} PARENT_SCOPE)
 
     # Forward the arguments to the regular add_library command
     add_library(${ARGN})
