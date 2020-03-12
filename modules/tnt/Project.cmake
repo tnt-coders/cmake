@@ -115,8 +115,8 @@ function(tnt_project_Install)
     # If a namespace was specified for the project, use it
     set(installDestination lib/cmake/${PROJECT_NAME})
     if(${PROJECT_NAME}_NAMESPACE)
-        set(installDestination lib/cmake/$${{PROJECT_NAME}_NAMESPACE}/${PROJECT_NAME})
-        set(installNamespace ${{PROJECT_NAME}_NAMESPACE}::)
+        set(installDestination lib/cmake/${${PROJECT_NAME}_NAMESPACE}/${PROJECT_NAME})
+        set(installNamespace ${${PROJECT_NAME}_NAMESPACE}::)
     endif()
 
     # Create an export package of the targets
