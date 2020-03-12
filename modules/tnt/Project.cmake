@@ -91,7 +91,7 @@ function(tnt_project_AddLibrary)
     set(${PROJECT_NAME}_TARGETS ${${PROJECT_NAME}_TARGETS} CACHE INTERNAL)
 
     # Forward the arguments to the regular add_library command
-    add_library(${ARGN})
+    add_library(${ARGV})
 
     # Handle the project namespace if there is one
     set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${target})
