@@ -80,6 +80,22 @@ include_guard(GLOBAL)
 # PackageConfigHelper functions are required to parse input arguments
 include(CMakePackageConfigHelpers)
 
+function(tnt_project_AddLibrary)
+    set(target ${ARGV0})
+
+    # Add the target to the list of targets for the project
+    list(APPEND ${PROJECT_NAME}_TARGETS ${target})
+
+    # Forward the arguments to the regular add_library command
+    add_library(${ARGN})
+
+    if(${PROJECT_NAME}_NAMESPACE)
+        add_library(${{PROJECT_NAME}_NAMESPACE}::${target}
+          ALIAS ${target}
+        )
+    endif()
+endfunction()
+
 function(tnt_project_Install)
 
     # If a namespace was specified for the project, use it
