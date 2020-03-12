@@ -20,6 +20,9 @@ Functions
         [<etc.>]
     )
 
+  Libraries installed with this command will also have default include
+  directories set based on the canonical CMake project layout.
+
   The following variables are modified by this function:
 
   .. variable:: <PROJECT_NAME>_TARGETS
@@ -89,11 +92,22 @@ function(tnt_project_AddLibrary)
     # Forward the arguments to the regular add_library command
     add_library(${ARGN})
 
+    # Handle the project namespace if there is one
+    set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${target})
     if(${PROJECT_NAME}_NAMESPACE)
-        add_library(${{PROJECT_NAME}_NAMESPACE}::${target}
+        add_library(${${PROJECT_NAME}_NAMESPACE}::${target}
           ALIAS ${target}
         )
+        set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${${PROJECT_NAME}_NAMESPACE}/${target})
     endif()
+
+    # Set the canonical include directories for the library
+    target_include_directories(${target}
+      PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+             $<INSTALL_INTERFACE:include>
+      PRIVATE $<BUILD_INTERFACE:${privateIncludePath}>
+              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    )
 endfunction()
 
 function(tnt_project_Install)
