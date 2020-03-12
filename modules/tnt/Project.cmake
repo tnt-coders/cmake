@@ -84,22 +84,23 @@ include_guard(GLOBAL)
 include(CMakePackageConfigHelpers)
 
 function(tnt_project_AddLibrary)
+    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_NAMESPACE)
+
     set(target ${ARGV0})
 
     # Add the target to the list of targets for the project
-    list(APPEND ${PROJECT_NAME}_TARGETS ${target})
-    set(${PROJECT_NAME}_TARGETS ${${PROJECT_NAME}_TARGETS} CACHE INTERNAL "Project target list")
+    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} APPEND ${PROJECT_NAME}_TARGETS ${target})
 
     # Forward the arguments to the regular add_library command
     add_library(${ARGV})
 
     # Handle the project namespace if there is one
     set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${target})
-    if(${PROJECT_NAME}_NAMESPACE)
-        add_library(${${PROJECT_NAME}_NAMESPACE}::${target}
+    if(projectNamespace)
+        add_library(${projectNamespace}::${target}
           ALIAS ${target}
         )
-        set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${${PROJECT_NAME}_NAMESPACE}/${target})
+        set(privateIncludePath ${PROJECT_SOURCE_DIR}/include/${projectNamespace}/${target})
     endif()
 
     # Set the canonical include directories for the library
@@ -112,17 +113,19 @@ function(tnt_project_AddLibrary)
 endfunction()
 
 function(tnt_project_Install)
+    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_NAMESPACE)
+    get_property(projectTargets DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_TARGETS)
 
     # If a namespace was specified for the project, use it
     set(installDestination lib/cmake/${PROJECT_NAME})
-    if(${PROJECT_NAME}_NAMESPACE)
-        set(installDestination lib/cmake/${${PROJECT_NAME}_NAMESPACE}/${PROJECT_NAME})
-        set(installNamespace ${${PROJECT_NAME}_NAMESPACE}::)
+    if(projectNamespace)
+        set(installDestination lib/cmake/${projectNamespace}/${PROJECT_NAME})
+        set(installNamespace ${projectNamespace}::)
     endif()
 
     # Create an export package of the targets
     install(
-      TARGETS ${${PROJECT_NAME}_TARGETS}
+      TARGETS ${projectTargets}
       EXPORT ${PROJECT_NAME}-targets
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib
@@ -180,5 +183,5 @@ function(tnt_project_Install)
 endfunction()
 
 function(tnt_project_SetNamespace)
-    set(${PROJECT_NAME}_NAMESPACE ${ARGV0} CACHE INTERNAL "Project namespace")
+    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY ${PROJECT_NAME}_NAMESPACE ${ARGV0})
 endfunction()
