@@ -88,7 +88,7 @@ function(tnt_project_AddLibrary)
 
     # Add the target to the list of targets for the project
     list(APPEND ${PROJECT_NAME}_TARGETS ${target})
-    set(${PROJECT_NAME}_TARGETS ${${PROJECT_NAME}_TARGETS} PARENT_SCOPE)
+    set(${PROJECT_NAME}_TARGETS ${${PROJECT_NAME}_TARGETS} CACHE INTERNAL)
 
     # Forward the arguments to the regular add_library command
     add_library(${ARGN})
@@ -179,6 +179,6 @@ function(tnt_project_Install)
     )
 endfunction()
 
-macro(tnt_project_SetNamespace)
-    set(${PROJECT_NAME}_NAMESPACE ${ARGV0})
-endmacro()
+function(tnt_project_SetNamespace)
+    set(${PROJECT_NAME}_NAMESPACE ${ARGV0} CACHE INTERNAL)
+endfunction()
