@@ -84,12 +84,12 @@ include_guard(GLOBAL)
 include(CMakePackageConfigHelpers)
 
 function(tnt_project_AddLibrary)
-    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_NAMESPACE)
+    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY ${PROJECT_NAME}_NAMESPACE)
 
     set(target ${ARGV0})
 
     # Add the target to the list of targets for the project
-    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} APPEND ${PROJECT_NAME}_TARGETS ${target})
+    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} APPEND PROPERTY ${PROJECT_NAME}_TARGETS ${target})
 
     # Forward the arguments to the regular add_library command
     add_library(${ARGV})
@@ -113,8 +113,8 @@ function(tnt_project_AddLibrary)
 endfunction()
 
 function(tnt_project_Install)
-    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_NAMESPACE)
-    get_property(projectTargets DIRECTORY ${PROJECT_SOURCE_DIR} ${PROJECT_NAME}_TARGETS)
+    get_property(projectNamespace DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY ${PROJECT_NAME}_NAMESPACE)
+    get_property(projectTargets DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY ${PROJECT_NAME}_TARGETS)
 
     # If a namespace was specified for the project, use it
     set(installDestination lib/cmake/${PROJECT_NAME})
