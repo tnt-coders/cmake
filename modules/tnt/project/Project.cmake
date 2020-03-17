@@ -98,7 +98,7 @@ function(tnt_project_Install args_THIS)
     tnt_class_Get(tnt_project ${args_THIS} NAMESPACE namespace)
     set(installDestination "lib/cmake/${name}")
     if(namespace)
-        set(installDestination "lib/cmake/${namespace}/${name})
+        set(installDestination "lib/cmake/${namespace}/${name}")
         set(installNamespace "${namespace}::")
     endif()
 
@@ -156,7 +156,7 @@ function(tnt_project_Install args_THIS)
     endif()
 
     # Install config files for the project
-    intall(
+    install(
       FILES ${installFiles}
       DESTINATION ${installDestination}
     )
