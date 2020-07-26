@@ -120,7 +120,6 @@ function(tnt_project_ConanInstall args_THIS)
       CONANFILE ${conanfile}
       BUILD outdated
       BASIC_SETUP
-      CMAKE_TARGETS
         ${ARGN}
     )
 endfunction()
