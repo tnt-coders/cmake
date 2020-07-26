@@ -35,6 +35,41 @@ function(tnt_project_New args_THIS)
     _tnt_project_DefineVersion(${args_THIS})
 endfunction()
 
+function(tnt_project_AddExecutable args_THIS)
+    tnt_class_MemberFunction(tnt_project ${args_THIS})
+
+    set(options)
+    set(oneValueArgs TARGET)
+    set(multiValueArgs SOURCES)
+    cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    # Create the executable
+    add_executable(${args_TARGET} ${args_SOURCES})
+
+    # Initialize default include directories
+    tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
+    set(privateIncludeDir "${sourceDir}/include/${args_TARGET}")
+
+    # Handle namespace considerations
+    tnt_class_Get(tnt_project ${args_THIS} NAMESPACE namespace)
+    if (namespace)
+        set(privateIncludeDir "${sourceDir}/include/${namespace}/${args_TARGET}")
+    endif()
+
+    # Set default include directories
+    target_include_directories(${args_TARGET}
+      PRIVATE
+        ${sourceDir}/include
+        ${privateIncludeDir}
+        ${sourceDir}/src
+    )
+
+    # Add the target to the list of project managed targets
+    tnt_class_Get(tnt_project ${args_THIS} TARGETS targets)
+    list(APPEND targets ${args_TARGET})
+    tnt_class_Set(tnt_project ${args_THIS} TARGETS "${targets}")
+endfunction()
+
 function(tnt_project_AddLibrary args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
