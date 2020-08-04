@@ -143,6 +143,7 @@ function(tnt_project_Install args_THIS)
     # Create an export package of the targets
     # Use GNUInstallDirs and COMPONENTS
     # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
+    # TODO: Investigate why using "COMPONENTS" broke usage of the package
     tnt_class_Get(tnt_project ${args_THIS} TARGETS targets)
     install(
       TARGETS ${targets}
