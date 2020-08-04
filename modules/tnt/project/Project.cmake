@@ -148,14 +148,14 @@ function(tnt_project_Install args_THIS)
       TARGETS ${targets}
       EXPORT ${name}-targets
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT ${name}_Development
+        #COMPONENT ${name}_Development
       INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        COMPONENT ${name}_Development
+        #COMPONENT ${name}_Development
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT ${name}_Runtime
-        NAMELINK_COMPONENT ${name}_Development
+        #COMPONENT ${name}_Runtime
+        #NAMELINK_COMPONENT ${name}_Development
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        COMPONENT ${name}_Runtime
+        #COMPONENT ${name}_Runtime
     )
 
     # Install the export package
