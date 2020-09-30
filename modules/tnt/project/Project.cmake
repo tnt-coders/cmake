@@ -116,9 +116,9 @@ function(tnt_project_ConanInstall args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
     # Do not run conan install if we are in the local cache
-    #if (CONAN_EXPORTED)
-    #    return()
-    #endif()
+    if (CONAN_EXPORTED)
+        return()
+    endif()
 
     tnt_class_Get(tnt_project ${args_THIS} CONANFILE conanfile)
     conan_cmake_run(
