@@ -123,7 +123,7 @@ function(tnt_project_ConanInstall args_THIS)
     tnt_class_Get(tnt_project ${args_THIS} CONANFILE conanfile)
     conan_cmake_run(
       CONANFILE ${conanfile}
-      BUILD missing
+      BUILD outdated
       BASIC_SETUP
         ${ARGN}
     )
