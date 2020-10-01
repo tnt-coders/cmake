@@ -117,7 +117,8 @@ function(tnt_project_ConanInstall args_THIS)
 
     # Do not run conan install if we are in the local cache
     if (CONAN_EXPORTED)
-        return()
+        include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+        conan_basic_setup(TARGETS)
     endif()
 
     tnt_class_Get(tnt_project ${args_THIS} CONANFILE conanfile)
@@ -125,7 +126,8 @@ function(tnt_project_ConanInstall args_THIS)
       CONANFILE ${conanfile}
       BUILD outdated
       BASIC_SETUP
-        ${ARGN}
+      CMAKE_TARGETS
+      ${ARGN}
     )
 endfunction()
 
