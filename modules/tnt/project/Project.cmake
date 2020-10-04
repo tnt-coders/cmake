@@ -78,10 +78,8 @@ function(tnt_project_AddLibrary args_THIS)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-message("unparsed: ${args_UNPARSED_ARGUMENTS}")
-
     # Create the library
-    add_library(${args_TARGET} ${args_SOURCES} ${ARGN})
+    add_library(${args_TARGET} ${args_SOURCES} ${args_UNPARSED_ARGUMENTS})
 
     # Handle RPATH considerations for shared libraries
     # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
@@ -129,7 +127,7 @@ function(tnt_project_ConanInstall args_THIS)
       BUILD outdated
       BASIC_SETUP
       CMAKE_TARGETS
-      ${ARGN}
+      ${args_UNPARSED_ARGUMENTS}
     )
 endfunction()
 
