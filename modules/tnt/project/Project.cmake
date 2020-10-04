@@ -103,7 +103,8 @@ function(tnt_project_AddLibrary args_THIS)
     # Set default include directories
     if (${args_INTERFACE})
         target_include_directories(${args_TARGET}
-          INTERFACE $<INSTALL_INGERFACE:include>
+          INTERFACE
+            $<INSTALL_INGERFACE:include>
         )
     else()
         target_include_directories(${args_TARGET}
