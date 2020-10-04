@@ -101,14 +101,20 @@ function(tnt_project_AddLibrary args_THIS)
     endif()
 
     # Set default include directories
-    target_include_directories(${args_TARGET}
-      PUBLIC
-        $<BUILD_INTERFACE:${sourceDir}/include>
-        $<INSTALL_INTERFACE:include>
-      PRIVATE
-        $<BUILD_INTERFACE:${privateIncludeDir}>
-        $<BUILD_INTERFACE:${sourceDir}/src>
-    )
+    if (${args_INTERFACE})
+        target_include_directories(${args_TARGET}
+          INTERFACE include
+        )
+    else()
+        target_include_directories(${args_TARGET}
+          PUBLIC
+            $<BUILD_INTERFACE:${sourceDir}/include>
+            $<INSTALL_INTERFACE:include>
+          PRIVATE
+            $<BUILD_INTERFACE:${privateIncludeDir}>
+            $<BUILD_INTERFACE:${sourceDir}/src>
+        )
+    endif()
 
     # Add the target to the list of project managed targets
     tnt_class_Get(tnt_project ${args_THIS} TARGETS targets)
