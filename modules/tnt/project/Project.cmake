@@ -104,6 +104,7 @@ function(tnt_project_AddLibrary args_THIS)
     if (${args_INTERFACE})
         target_include_directories(${args_TARGET}
           INTERFACE
+            $<BUILD_INTERFACE:${sourceDir}/include>
             $<INSTALL_INTERFACE:include>
         )
     else()
