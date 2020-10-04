@@ -79,7 +79,7 @@ function(tnt_project_AddLibrary args_THIS)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Create the library
-    add_library(${args_TARGET} ${args_SOURCES})
+    add_library(${args_TARGET} ${args_SOURCES} ${ARGN})
 
     # Handle RPATH considerations for shared libraries
     # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
