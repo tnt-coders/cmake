@@ -73,17 +73,21 @@ endfunction()
 function(tnt_project_AddLibrary args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
-    set(options)
+    set(options INTERFACE)
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Create the library
-    add_library(${args_TARGET} ${args_SOURCES} ${args_UNPARSED_ARGUMENTS})
+    if (${args_INTERFACE})
+        add_library(${args_TARGET} INTERFACE ${args_UNPARSED_ARGUMENTS})
+    else()
+        add_library(${args_TARGET} ${args_SOURCES} ${args_UNPARSED_ARGUMENTS})
 
-    # Handle RPATH considerations for shared libraries
-    # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
-    set_target_properties(${args_TARGET} PROPERTIES BUILD_RPATH_USE_ORIGIN TRUE)
+        # Handle RPATH considerations for shared libraries
+        # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
+        set_target_properties(${args_TARGET} PROPERTIES BUILD_RPATH_USE_ORIGIN TRUE)
+    endif()
 
     # Initialize default include directories
     tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
