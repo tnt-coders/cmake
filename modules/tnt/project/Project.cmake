@@ -78,6 +78,8 @@ function(tnt_project_AddLibrary args_THIS)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+message("ARGN: ${ARGN}")
+
     # Create the library
     add_library(${args_TARGET} ${args_SOURCES} ${ARGN})
 
