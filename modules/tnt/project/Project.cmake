@@ -73,17 +73,21 @@ endfunction()
 function(tnt_project_AddLibrary args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
-    set(options)
+    set(options INTERFACE)
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Create the library
-    add_library(${args_TARGET} ${args_SOURCES})
+    if (${args_INTERFACE})
+        add_library(${args_TARGET} INTERFACE ${args_UNPARSED_ARGUMENTS})
+    else()
+        add_library(${args_TARGET} ${args_SOURCES} ${args_UNPARSED_ARGUMENTS})
 
-    # Handle RPATH considerations for shared libraries
-    # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
-    set_target_properties(${args_TARGET} PROPERTIES BUILD_RPATH_USE_ORIGIN TRUE)
+        # Handle RPATH considerations for shared libraries
+        # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
+        set_target_properties(${args_TARGET} PROPERTIES BUILD_RPATH_USE_ORIGIN TRUE)
+    endif()
 
     # Initialize default include directories
     tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
@@ -97,14 +101,22 @@ function(tnt_project_AddLibrary args_THIS)
     endif()
 
     # Set default include directories
-    target_include_directories(${args_TARGET}
-      PUBLIC
-        $<BUILD_INTERFACE:${sourceDir}/include>
-        $<INSTALL_INTERFACE:include>
-      PRIVATE
-        $<BUILD_INTERFACE:${privateIncludeDir}>
-        $<BUILD_INTERFACE:${sourceDir}/src>
-    )
+    if (${args_INTERFACE})
+        target_include_directories(${args_TARGET}
+          INTERFACE
+            $<BUILD_INTERFACE:${sourceDir}/include>
+            $<INSTALL_INTERFACE:include>
+        )
+    else()
+        target_include_directories(${args_TARGET}
+          PUBLIC
+            $<BUILD_INTERFACE:${sourceDir}/include>
+            $<INSTALL_INTERFACE:include>
+          PRIVATE
+            $<BUILD_INTERFACE:${privateIncludeDir}>
+            $<BUILD_INTERFACE:${sourceDir}/src>
+        )
+    endif()
 
     # Add the target to the list of project managed targets
     tnt_class_Get(tnt_project ${args_THIS} TARGETS targets)
@@ -115,12 +127,19 @@ endfunction()
 function(tnt_project_ConanInstall args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
+    # Do not run conan install if we are in the local cache
+    if (CONAN_EXPORTED)
+        include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+        conan_basic_setup()
+    endif()
+
     tnt_class_Get(tnt_project ${args_THIS} CONANFILE conanfile)
     conan_cmake_run(
       CONANFILE ${conanfile}
       BUILD outdated
       BASIC_SETUP
-        ${ARGN}
+      CMAKE_TARGETS
+      ${args_UNPARSED_ARGUMENTS}
     )
 endfunction()
 
@@ -132,26 +151,26 @@ function(tnt_project_Install args_THIS)
     tnt_class_Get(tnt_project ${args_THIS} NAMESPACE namespace)
     set(installDestination "lib/cmake/${name}")
     if(namespace)
-        set(installDestination "lib/cmake/${namespace}/${name}")
         set(installNamespace "${namespace}::")
     endif()
 
     # Create an export package of the targets
     # Use GNUInstallDirs and COMPONENTS
     # See "Deep CMake for Library Authors" https://www.youtube.com/watch?v=m0DwB4OvDXk
+    # TODO: Investigate why using "COMPONENTS" broke usage of the package
     tnt_class_Get(tnt_project ${args_THIS} TARGETS targets)
     install(
       TARGETS ${targets}
       EXPORT ${name}-targets
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT ${name}_Development
+        #COMPONENT ${name}_Development
       INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        COMPONENT ${name}_Development
+        #COMPONENT ${name}_Development
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT ${name}_Runtime
-        NAMELINK_COMPONENT ${name}_Development
+        #COMPONENT ${name}_Runtime
+        #NAMELINK_COMPONENT ${name}_Development
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        COMPONENT ${name}_Runtime
+        #COMPONENT ${name}_Runtime
     )
 
     # Install the export package
