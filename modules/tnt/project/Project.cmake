@@ -35,6 +35,22 @@ function(tnt_project_New args_THIS)
     if (NOT CONAN_EXPORTED)
         _tnt_project_DefineVersion(${args_THIS})
     endif()
+
+    # Create a CMake target for generating a conan package for the project
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py)
+        tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
+        tnt_class_Get(tnt_project ${args_THIS} NAME name)
+        tnt_class_Get(tnt_project ${args_THIS} VERSION version)
+        add_custom_target(${args_THIS}_package_stable
+          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/stable
+          VERBATIM
+        )
+        add_custom_target(${args_THIS}_package_testing
+          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/testing
+          VERBATIM
+        )
+    endif()
+
 endfunction()
 
 function(tnt_project_AddExecutable args_THIS)
