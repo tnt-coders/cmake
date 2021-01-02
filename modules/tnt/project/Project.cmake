@@ -11,7 +11,7 @@ function(tnt_project_New args_THIS)
     tnt_class_CreateObject(tnt_project ${args_THIS})
 
     set(options VERSION_FROM_GIT)
-    set(oneValueArgs CONANFILE NAMESPACE)
+    set(oneValueArgs CONANFILE CONAN_USER NAMESPACE)
     set(multiValueArgs)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -21,41 +21,20 @@ function(tnt_project_New args_THIS)
     tnt_class_Set(tnt_project ${args_THIS} SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
     # Set member variables
-    if(args_VERSION_FROM_GIT)
-        tnt_class_Set(tnt_project ${args_THIS} VERSION_FROM_GIT "${args_VERSION_FROM_GIT}")
-    endif()
     if(args_CONANFILE)
         tnt_class_Set(tnt_project ${args_THIS} CONANFILE "${args_CONANFILE}")
     endif()
     if(args_NAMESPACE)
         tnt_class_Set(tnt_project ${args_THIS} NAMESPACE "${args_NAMESPACE}")
     endif()
+    if(args_VERSION_FROM_GIT)
+        tnt_class_Set(tnt_project ${args_THIS} VERSION_FROM_GIT "${args_VERSION_FROM_GIT}")
+    endif()
 
     # Define the project version
     if (NOT CONAN_EXPORTED)
         _tnt_project_DefineVersion(${args_THIS})
     endif()
-
-    # Create a CMake target for generating a conan package for the project
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py)
-        tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
-        tnt_class_Get(tnt_project ${args_THIS} NAME name)
-        tnt_class_Get(tnt_project ${args_THIS} VERSION version)
-        tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
-        tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
-
-        # Tweak versions and dirty builds are always considered testing
-        set(channel stable)
-        if(versionTweak OR versionIsDirty)
-            set(channel testing)
-        endif()
-
-        add_custom_target(${args_THIS}_package
-          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/${channel}
-          VERBATIM
-        )
-    endif()
-
 endfunction()
 
 function(tnt_project_AddExecutable args_THIS)
@@ -243,6 +222,40 @@ function(tnt_project_Install args_THIS)
       DIRECTORY ${sourceDir}/include/
       DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
       FILES_MATCHING PATTERN "*.h*"
+    )
+endfunction()
+
+function(tnt_project_Package args_THIS)
+    tnt_class_MemberFunction(tnt_project ${args_THIS})
+
+    set(options)
+    set(oneValueArgs USER)
+    set(multiValueArgs)
+    cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    # Validate input
+    if (NOT args_USER)
+        message(FATAL_ERROR "Missing required argument 'USER'.")
+    endif()
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py)
+        message(FATAL_ERROR "No conanfile.py found for the current project.")
+    endif()
+
+    tnt_class_Get(tnt_project ${args_THIS} NAME package)
+    tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
+    tnt_class_Get(tnt_project ${args_THIS} VERSION version)
+    tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
+    tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
+
+    # Tweak versions and dirty builds are always considered testing
+    set(channel stable)
+    if(versionTweak OR versionIsDirty)
+        set(channel testing)
+    endif()
+
+    add_custom_target(${args_THIS}_package
+        COMMAND conan create ${sourceDir} ${package}/${version}@${args_USER}/${channel}
+        VERBATIM
     )
 endfunction()
 
