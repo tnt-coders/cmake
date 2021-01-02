@@ -46,7 +46,7 @@ function(tnt_project_New args_THIS)
 
         # Tweak versions and dirty builds are always considered testing
         set(channel stable)
-        if(VERSION_TWEAK OR VERSION_IS_DIRTY)
+        if(versionTweak OR versionIsDirty)
             set(channel testing)
         endif()
 
