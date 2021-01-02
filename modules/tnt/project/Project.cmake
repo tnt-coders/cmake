@@ -32,7 +32,9 @@ function(tnt_project_New args_THIS)
     endif()
 
     # Define the project version
-    _tnt_project_DefineVersion(${args_THIS})
+    if (NOT CONAN_EXPORTED)
+        _tnt_project_DefineVersion(${args_THIS})
+    endif()
 endfunction()
 
 function(tnt_project_AddExecutable args_THIS)
@@ -127,7 +129,7 @@ endfunction()
 function(tnt_project_ConanInstall args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
-    # Do not run conan install if we are in the local cache
+    # Perform conan basic setup if exported
     if (CONAN_EXPORTED)
         include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
         conan_basic_setup()
