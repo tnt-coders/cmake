@@ -41,12 +41,17 @@ function(tnt_project_New args_THIS)
         tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
         tnt_class_Get(tnt_project ${args_THIS} NAME name)
         tnt_class_Get(tnt_project ${args_THIS} VERSION version)
-        add_custom_target(${args_THIS}_package_stable
-          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/stable
-          VERBATIM
-        )
-        add_custom_target(${args_THIS}_package_testing
-          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/testing
+        tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
+        tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
+
+        # Tweak versions and dirty builds are always considered testing
+        set(channel stable)
+        if(VERSION_TWEAK OR VERSION_IS_DIRTY)
+            set(channel testing)
+        endif()
+
+        add_custom_target(${args_THIS}_package
+          COMMAND conan create ${sourceDir} ${name}/${version}@tnt-coders/${channel}
           VERBATIM
         )
     endif()
