@@ -238,30 +238,29 @@ function(tnt_project_Package args_THIS)
         message(FATAL_ERROR "Missing required argument 'USER'.")
     endif()
 
-    tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
-
-    # Verify the conanfile exists
     if (NOT CONAN_EXPORTED)
+        tnt_class_Get(tnt_project ${args_THIS} NAME package)
+        tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
+        tnt_class_Get(tnt_project ${args_THIS} VERSION version)
+        tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
+        tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
+
+        # Make sure the conanfile exists
         if(NOT EXISTS ${sourceDir}/conanfile.py)
             message(FATAL_ERROR "No conanfile.py found for the current project.")
         endif()
+
+        # Tweak versions and dirty builds are always considered testing
+        set(channel stable)
+        if(versionTweak OR versionIsDirty)
+            set(channel testing)
+        endif()
+
+        add_custom_target(${args_THIS}_package
+            COMMAND conan create ${sourceDir} ${package}/${version}@${args_USER}/${channel}
+            VERBATIM
+        )
     endif()
-
-    tnt_class_Get(tnt_project ${args_THIS} NAME package)
-    tnt_class_Get(tnt_project ${args_THIS} VERSION version)
-    tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
-    tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
-
-    # Tweak versions and dirty builds are always considered testing
-    set(channel stable)
-    if(versionTweak OR versionIsDirty)
-        set(channel testing)
-    endif()
-
-    add_custom_target(${args_THIS}_package
-        COMMAND conan create ${sourceDir} ${package}/${version}@${args_USER}/${channel}
-        VERBATIM
-    )
 endfunction()
 
 ################################################################################
