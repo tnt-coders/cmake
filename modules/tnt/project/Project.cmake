@@ -237,12 +237,17 @@ function(tnt_project_Package args_THIS)
     if (NOT args_USER)
         message(FATAL_ERROR "Missing required argument 'USER'.")
     endif()
-    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py)
-        message(FATAL_ERROR "No conanfile.py found for the current project.")
+
+    tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
+
+    # Verify the conanfile exists
+    if (NOT CONAN_EXPORTED)
+        if(NOT EXISTS ${sourceDir}/conanfile.py)
+            message(FATAL_ERROR "No conanfile.py found for the current project.")
+        endif()
     endif()
 
     tnt_class_Get(tnt_project ${args_THIS} NAME package)
-    tnt_class_Get(tnt_project ${args_THIS} SOURCE_DIR sourceDir)
     tnt_class_Get(tnt_project ${args_THIS} VERSION version)
     tnt_class_Get(tnt_project ${args_THIS} VERSION_TWEAK versionTweak)
     tnt_class_Get(tnt_project ${args_THIS} VERSION_IS_DIRTY versionIsDirty)
