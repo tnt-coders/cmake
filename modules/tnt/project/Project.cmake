@@ -141,6 +141,7 @@ function(tnt_project_ConanInstall args_THIS)
       BUILD outdated
       BASIC_SETUP
       CMAKE_TARGETS
+      UPDATE
       ${args_UNPARSED_ARGUMENTS}
     )
 endfunction()
