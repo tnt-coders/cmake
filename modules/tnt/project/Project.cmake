@@ -230,11 +230,14 @@ function(tnt_project_Package args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
     set(options)
-    set(oneValueArgs USER)
+    set(oneValueArgs REMOTE USER)
     set(multiValueArgs)
     cmake_parse_arguments(args "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Validate input
+    if (NOT args_REMOTE)
+        message(FATAL_ERROR "Missing required argument 'REMOTE'.")
+    endif()
     if (NOT args_USER)
         message(FATAL_ERROR "Missing required argument 'USER'.")
     endif()
@@ -259,6 +262,11 @@ function(tnt_project_Package args_THIS)
 
         add_custom_target(${args_THIS}_package
             COMMAND conan create ${sourceDir} ${package}/${version}@${args_USER}/${channel}
+            VERBATIM
+        )
+
+        add_custom_target(${args_THIS}_upload
+            COMMAND conan upload --all --remote ${args_REMOTE} ${package}/${version}@${args_USER}/${channel}
             VERBATIM
         )
     endif()
