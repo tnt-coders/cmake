@@ -226,7 +226,7 @@ function(tnt_project_Install args_THIS)
     )
 endfunction()
 
-function(tnt_project_Package args_THIS)
+function(tnt_project_ConanPackage args_THIS)
     tnt_class_MemberFunction(tnt_project ${args_THIS})
 
     set(options)
@@ -260,12 +260,12 @@ function(tnt_project_Package args_THIS)
             set(channel testing)
         endif()
 
-        add_custom_target(${args_THIS}_package
+        add_custom_target(${args_THIS}_conan_package
             COMMAND conan create ${sourceDir} ${package}/${version}@${args_USER}/${channel}
             VERBATIM
         )
 
-        add_custom_target(${args_THIS}_upload
+        add_custom_target(${args_THIS}_conan_upload
             COMMAND conan upload --all --remote ${args_REMOTE} ${package}/${version}@${args_USER}/${channel}
             VERBATIM
         )
