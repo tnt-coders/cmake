@@ -6,4 +6,4 @@ project.
 ## Usage
 
 Using these modules is very straightforward. Simply add this repository to your project in a git
-submodule and then directly include the modules from within the CMakeLists.txt file
+submodule and then directly include the modules from within the CMakeLists.txt file.
