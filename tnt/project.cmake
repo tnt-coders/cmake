@@ -81,6 +81,11 @@ function(tnt_project__set_version_from_git)
     set(${PROJECT_NAME}_VERSION_HASH ${version_git_hash} PARENT_SCOPE)
 endfunction()
 
+function(tnt_project__set_namespace args_NAMESPACE)
+    set(PROJECT_NAMESPACE ${args_NAMESPACE} PARENT_SCOPE)
+    set(${PROJECT_NAME}_NAMESPACE ${args_NAMESPACE} PARENT_SCOPE)
+endfunction()
+
 function(tnt_project__conan_install)
 
     # Only perform conan basic setup if exported
