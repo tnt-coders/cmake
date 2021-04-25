@@ -288,7 +288,7 @@ function(tnt_project__install)
     file(
             WRITE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake.in
             "@PACKAGE_INIT@\n"
-            "include(\${PROJECT_SOURCE_DIR}/${PROJECT_NAME}-targets.cmake)")
+            "include(\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}-targets.cmake)")
     configure_package_config_file(
             ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake.in
             ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
