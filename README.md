@@ -10,7 +10,7 @@ submodule and then directly include the modules from within the CMakeLists.txt f
 
     git submodule add https://gitlab.com/tnt-coders/cpp/cmake/cmake.git
 
-Then add the module to the `CMAKE_MODULE_PATH`
+Then add the modules to the `CMAKE_MODULE_PATH`
 
 **CMakeLists.txt**
 
