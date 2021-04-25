@@ -36,7 +36,7 @@ function(tnt_project__set_version_from_git)
         set(version_patch ${CMAKE_MATCH_3})
         set(version_tweak ${CMAKE_MATCH_4})
 
-        string(APPEND version "${version_major}.${version_minor}.${version_patch}.${version_tweak}")
+        string(APPEND version "${version_major}.${version_minor}.${version_patch}")
     else ()
         message(FATAL_ERROR "Git returned an invalid version: ${git_output}")
     endif ()
