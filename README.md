@@ -15,5 +15,5 @@ Then add the module to the `CMAKE_MODULE_PATH`
 **CMakeLists.txt**
 
     # Include the required modules
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-    include(tnt/project/Project)
+    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+    include(tnt/project)
