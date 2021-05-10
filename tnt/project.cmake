@@ -18,7 +18,7 @@ function(tnt_project__set_version_from_git)
     # Use "git describe" to get version information from Git
     execute_process(
             COMMAND ${GIT_EXECUTABLE} describe --dirty --long --match=v* --tags
-            WORKING_DIRECTORY git
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             RESULT_VARIABLE git_result
             OUTPUT_VARIABLE git_output OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_VARIABLE git_error ERROR_STRIP_TRAILING_WHITESPACE)
@@ -51,7 +51,7 @@ function(tnt_project__set_version_from_git)
     # Use "git log" to get the current commit hash from Git
     execute_process(
             COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%H
-            WORKING_DIRECTORY git
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             RESULT_VARIABLE git_result
             OUTPUT_VARIABLE git_output OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_VARIABLE git_error ERROR_STRIP_TRAILING_WHITESPACE)
