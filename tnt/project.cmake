@@ -1,7 +1,5 @@
 include_guard(GLOBAL)
 
-include(tnt/conan)
-
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -9,11 +7,6 @@ function(tnt_project__set_version_from_git)
 
     # This function requires the Git package to function
     find_package(Git REQUIRED)
-
-    # If conan exported, git is not accessible
-    if (CONAN_EXPORTED)
-        return()
-    endif ()
 
     # Use "git describe" to get version information from Git
     execute_process(
@@ -84,95 +77,6 @@ endfunction()
 function(tnt_project__set_namespace args_NAMESPACE)
     set(PROJECT_NAMESPACE ${args_NAMESPACE} PARENT_SCOPE)
     set(${PROJECT_NAME}_NAMESPACE ${args_NAMESPACE} PARENT_SCOPE)
-endfunction()
-
-function(tnt_project__conan_install)
-
-    # Only perform conan basic setup if exported
-    if (CONAN_EXPORTED)
-        include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
-        conan_basic_setup()
-        return()
-    endif ()
-
-    # Make sure the conanfile exists
-    if (EXISTS ${PROJECT_SOURCE_DIR}/conanfile.py)
-        set(conanfile conanfile.py)
-    elseif (EXISTS ${PROJECT_SOURCE_DIR}/conanfile.txt)
-        set(conanfile conanfile.txt)
-    else ()
-        message(FATAL_ERROR "No conan file (conanfile.py or conanfile.txt) found for the current project.")
-    endif ()
-
-    # Run conan from CMake and install the project dependencies
-    conan_cmake_run(
-            CONANFILE ${conanfile}
-            BUILD outdated
-            BASIC_SETUP
-            CMAKE_TARGETS
-            UPDATE
-            ${ARGN})
-endfunction()
-
-function(tnt_project__conan_package)
-    if (CONAN_EXPORTED)
-        return()
-    endif()
-
-    set(options)
-    set(one_value_args CHANNEL NAME REMOTE USER VERSION)
-    set(multi_value_args)
-    cmake_parse_arguments(args "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-
-    # Validate input
-    if (NOT args_REMOTE)
-        message(FATAL_ERROR "Missing required argument 'REMOTE'.")
-    endif ()
-
-    # Validate optional input
-    if (NOT args_CHANNEL)
-        if (PROJECT_VERSION_TWEAK OR PROJECT_VERSION_IS_DIRTY)
-            set(args_CHANNEL testing)
-        else ()
-            set(args_CHANNEL stable)
-        endif ()
-    endif ()
-    if (NOT args_NAME)
-        set(args_NAME ${PROJECT_NAME})
-    endif ()
-    if (NOT args_USER)
-        set(args_USER ${args_REMOTE})
-    endif ()
-    if (NOT args_VERSION)
-        set(args_VERSION ${PROJECT_VERSION})
-    endif ()
-
-    # Make sure the conanfile exists (must be conanfile.py for creating a package)
-    if (NOT EXISTS ${PROJECT_SOURCE_DIR}/conanfile.py)
-        message(FATAL_ERROR "No conanfile.py found for the current project.")
-    endif ()
-
-    set(package_args ${PROJECT_SOURCE_DIR})
-    if (args_USER AND args_CHANNEL)
-        list(APPEND package_args ${args_NAME}/${args_VERSION}@${args_USER}/${args_CHANNEL})
-    else ()
-        list(APPEND package_args ${args_NAME}/${args_VERSION})
-    endif ()
-
-    add_custom_target(${args_NAME}_conan_package
-            COMMAND conan create ${package_args}
-            VERBATIM)
-
-    set(upload_args --all --remote ${args_REMOTE})
-    if (args_USER AND args_CHANNEL)
-        list(APPEND upload_args ${args_NAME}/${args_VERSION}@${args_USER}/${args_CHANNEL})
-    else ()
-        list(APPEND upload_args ${args_NAME}/${args_VERSION})
-    endif ()
-
-    add_custom_target(${args_NAME}_conan_upload
-            COMMAND conan upload ${upload_args}
-            VERBATIM)
 endfunction()
 
 function(tnt_project__add_executable)
